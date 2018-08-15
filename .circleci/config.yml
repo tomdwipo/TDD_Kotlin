@@ -58,6 +58,14 @@ jobs:
           destination: reports
       - store_test_results:
           path: app/build/test-results
+      - run:
+         name: Run createMockDebugCoverageReport
+         command: ./gradlew createMockDebugCoverageReport
+      - store_artifacts:
+          path: app/build/reports
+          destination: reports
+      - store_test_results:
+          path: app/build/test-results
 #       - run:
 #           name: Run Domain Module Unit Tests
 #           command: ./gradlew :domain:test
