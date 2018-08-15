@@ -31,15 +31,15 @@ class MainActivity : AppCompatActivity(), LoginView {
     }
 
     override fun showErrorMessageForUserNamePassword() {
-        Snackbar.make(login,"Please check Username and Password", Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(login,getString(R.string.message_empty_username_password), Snackbar.LENGTH_SHORT).show()
     }
 
     override fun showErrorMessageForMaxLoginAttempt() {
-        Snackbar.make(login,"You Have exceeded MAX Attempt", Toast.LENGTH_SHORT).show()
+        Snackbar.make(login,getString(R.string.message_max_login_attempt), Toast.LENGTH_SHORT).show()
     }
 
     override fun showLoginSuccessMessage() {
-        Snackbar.make(login,"Login Successfully", Toast.LENGTH_SHORT).show()
+        Snackbar.make(login,getString(R.string.message_login_success), Toast.LENGTH_SHORT).show()
     }
 
 }

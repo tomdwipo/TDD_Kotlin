@@ -11,6 +11,7 @@ import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by Tommy Dwi Putranto on 15/08/18.
@@ -32,7 +33,7 @@ class MainActivityTest{
     fun checkErrorMessageIsDisplayedForEmptyData(){
         activityTestRule.launchActivity(Intent())
         onView(withId(R.id.login)).check(matches(isDisplayed())).perform(click());
-        onView(withText("Please check Username and Password")).check(matches(isDisplayed()))
+        onView(withText(R.string.message_empty_username_password)).check(matches(isDisplayed()))
     }
 
     @Test
@@ -41,6 +42,27 @@ class MainActivityTest{
         onView(withId(R.id.username)).check(matches(isDisplayed())).perform(typeText("tommy"), closeSoftKeyboard())
         onView(withId(R.id.password)).check(matches(isDisplayed())).perform(typeText("test"), closeSoftKeyboard())
         onView(withId(R.id.login)).check(matches(isDisplayed())).perform(click())
-        onView(withText("Login Successfully")).check(matches(isDisplayed()))
+        onView(withText(R.string.message_login_success)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun checkErrorMessageIsDisplayForMaxLoginAttempt(){
+        activityTestRule.launchActivity(Intent())
+        for(i in 0..3){
+            onView(withId(R.id.username)).check(matches(isDisplayed())).perform(typeText("${i}"), closeSoftKeyboard())
+            onView(withId(R.id.password)).check(matches(isDisplayed())).perform(typeText("test"), closeSoftKeyboard())
+            onView(withId(R.id.login)).check(matches(isDisplayed())).perform(click())
+            if (i == 3) {
+                onView(withText(R.string.message_max_login_attempt)).check(matches(isDisplayed()))
+            }else{
+                onView(withText(R.string.message_empty_username_password)).check(matches(isDisplayed()))
+            }
+            onView(withId(R.id.username)).perform(clearText())
+            onView(withId(R.id.password)).perform(clearText())
+            Thread.sleep(3000)
+        }
+
     }
 }
+
+
