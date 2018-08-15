@@ -1,56 +1,52 @@
+# Android CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-android/ for more details
+#
 version: 2
 jobs:
   build:
+    working_directory: ~/TDD_Kotlin
     docker:
-      - image: drazisil/android-sdk:1.0.41
-    working_directory: ~/androidlearn
+      - image: circleci/android:api-25-alpha
+    environment:
+      JVM_OPTS: -Xmx3200m
     steps:
-      # Ensure your image has git, otherwise the checkout step will fail
-      # - run: apt-get -qq update; apt-get -y install git
       - checkout
-      - run: mkdir artifacts
+      - restore_cache:
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "presentation/build.gradle" }}
+#      - run:
+#         name: Chmod permissions #if permission for Gradlew Dependencies fail, use this.
+#         command: sudo chmod +x ./gradlew
       - run:
-          name: List what is currently installed
-          command: sdkmanager --list
+          name: Download Dependencies
+          command: ./gradlew androidDependencies
+      - save_cache:
+          paths:
+            - ~/.gradle
+          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "presentation/build.gradle" }}
       - run:
-          name: Create AVD
-          command: |
-            echo "n" | avdmanager -v create avd -n androidlearn -k "system-images;android-25;google_apis;armeabi-v7a" -c 512M -g google_apis  -d "Nexus 7 2013"
-      - run:
-          name: Run Emulator
-          background: true
-          command: |
-            $ANDROID_SDK_ROOT/tools/emulator -no-window -noaudio -no-boot-anim -gpu swiftshader @androidlearn
-      - run:
-          name: Wait for Emulator
-          no_output_timeout: 15m
-          command: |
-            sleep 15
-            $ANDROID_SDK_ROOT/platform-tools/adb devices
-            sleep 10
-      - run:
-          name: Fetch logcat and props
-          background: true
-          command: |
-            $ANDROID_SDK_ROOT/platform-tools/adb logcat >> ./artifacts/logcat.txt
-            $ANDROID_SDK_ROOT/platform-tools/adb shell getprop >> ./artifacts/props.txt
-      - run:
-          name: Run Android Connected Tests
-          command: |
-            export ADB_INSTALL_TIMEOUT=120
-            export ANDROID_HOME=$ANDROID_SDK_ROOT
-            # ./scripts/test.sh
-            ./gradlew assembleDebug
-            # Wait for emulator to fully boot
-            # TODO: Need to create a good check
-            sleep 60
-            # Is the emulator still running?
-            adb devices
-            # Check if package manager is running
-            adb shell pm list packages
-            # Install package
-            $ANDROID_SDK_ROOT/platform-tools/adb install /home/android/androidlearn/app/build/outputs/apk/app-debug.apk
-            ./gradlew connectedAndroidTest
+          name: Run Presentation Module Unit Tests
+          command: ./gradlew :presentation:testDebugUnitTest
       - store_artifacts:
-          path: ~/androidlearn/artifacts
-          destination: env
+          path: presentation/build/reports
+      - store_test_results:
+          path: presentation/build/test-results
+      - run:
+          name: Run Domain Module Unit Tests
+          command: ./gradlew :domain:test
+      - store_artifacts:
+          path: domain/build/reports
+      - store_test_results:
+          path: domain/build/test-results
+      - run:
+          name: Run Data Module Unit Tests
+          command: ./gradlew :data:testDebugUnitTest
+      - store_artifacts:
+          path: data/build/reports
+      - store_test_results:
+          path: data/build/test-results
+      - run:
+          name: Run Lint Test
+          command: ./gradlew lint
+      - store_artifacts:
+          path: presentation/build/reports
