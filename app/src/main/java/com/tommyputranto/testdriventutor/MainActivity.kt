@@ -2,6 +2,7 @@ package com.tommyputranto.testdriventutor
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.widget.Toast
 import com.tommyputranto.testdriventutor.Login.LoginPresenter
 import com.tommyputranto.testdriventutor.Login.LoginView
@@ -30,15 +31,15 @@ class MainActivity : AppCompatActivity(), LoginView {
     }
 
     override fun showErrorMessageForUserNamePassword() {
-        Toast.makeText(applicationContext,"Please check Username and Password", Toast.LENGTH_SHORT).show()
+        Snackbar.make(login,"Please check Username and Password", Snackbar.LENGTH_SHORT).show()
     }
 
     override fun showErrorMessageForMaxLoginAttempt() {
-        Toast.makeText(applicationContext,"You Have exceeded MAX Attempt", Toast.LENGTH_SHORT).show()
+        Snackbar.make(login,"You Have exceeded MAX Attempt", Toast.LENGTH_SHORT).show()
     }
 
     override fun showLoginSuccessMessage() {
-        Toast.makeText(applicationContext,"Login Successfully", Toast.LENGTH_SHORT).show()
+        Snackbar.make(login,"Login Successfully", Toast.LENGTH_SHORT).show()
     }
 
 }
