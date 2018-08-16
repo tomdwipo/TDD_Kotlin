@@ -58,6 +58,14 @@ jobs:
           destination: reports
       - store_test_results:
           path: app/build/test-results
+      - run:
+           name: Run Lint Test
+           command: ./gradlew lint
+      - store_artifacts:
+           path: app/build/reports
+           destination: reports
+      - store_test_results:
+          path: app/build/test-results
 #      - run:
 #         name: Run createMockDebugCoverageReport
 #         command: ./gradlew createMockDebugCoverageReport
@@ -80,8 +88,4 @@ jobs:
 #           path: data/build/reports
 #       - store_test_results:
 #           path: data/build/test-results
-       - run:
-           name: Run Lint Test
-           command: ./gradlew lint
-       - store_artifacts:
-           path: app/build/reports
+
