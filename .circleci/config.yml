@@ -69,7 +69,7 @@ jobs:
       - run:
            name: Build debug APK
            command: ./gradlew :app:assembleDebug
-       - store_artifacts:
+      - store_artifacts:
            path: app/build/outputs/apk/
            destination: apks/
 #       - run:
